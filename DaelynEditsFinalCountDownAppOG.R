@@ -19,7 +19,7 @@ ui <-
     
     
     
-    titlePanel(title = h3("How many clicks in 5 seconds!!!", align = "center")),
+    titlePanel(title = h3("How many clicks in 5 seconds!!!", align = "center"),windowTitle = "Clicker Challenge"),
     
     
     
