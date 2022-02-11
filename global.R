@@ -6,5 +6,5 @@ GEN_PALETTE <- function(n) {
   sample(rainbow(50), 15)
 }
 
-FINAL_COUNTDOWN_SOUND <- load.wave("FCW.wav")
-BORAT_SOUND <- load.wave("Borat.wav")
+FINAL_COUNTDOWN_SOUND <- load.wave("sounds/FCW.wav")
+BORAT_SOUND <- load.wave("sounds/Borat.wav")
