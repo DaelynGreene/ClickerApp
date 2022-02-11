@@ -3,80 +3,78 @@ library(lubridate)
 library(audio)
 
 server <- function(input, output, session) {
-  timer <- reactiveVal(6)
-  active <- reactiveVal(FALSE)
-  ClickCounter <- reactiveValues(NumberClicks = 0)
+  rvs <- reactiveValues(
+    n_clicks = 0,
+    timer = 6,
+    active = FALSE
+  )
 
   observeEvent(input$Timer, {
-    ClickCounter$NumberClicks <- 0
+    play(FINAL_COUNTDOWN_SOUND)
+
+    rvs$active <- TRUE
+    rvs$timer <- 5
+    rvs$n_clicks <- 0
+
+    output$DisplayingClicks <- renderText("")
   })
 
   observeEvent(input$Clicks, {
-    ClickCounter$NumberClicks <- ClickCounter$NumberClicks + 1
+    rvs$n_clicks <- rvs$n_clicks + 1
   })
 
   observeEvent(input$DisplayClicks, {
     output$DisplayingClicks <- renderText({
-      ClickCounter$NumberClicks
+      rvs$n_clicks
     })
   })
 
   observe({
     invalidateLater(1000, session)
     isolate({
-      if (active()) {
-        timer(timer() - 1)
+      if (rvs$active) {
+        rvs$timer <- rvs$timer - 1
         output$Eggs <- renderUI({
-          isolate({
-            if (2 == 2) {
-              mainPanel(
-                align = "center",
-                width = 12,
-                setBackgroundColor(
-                  color = GEN_PALETTE(),
-                  gradient = "radial",
-                  direction = "bottom"
-                )
-              )
-            }
-          })
-        })
-        if (timer() < 1) {
-          active(FALSE)
-          showModal(modalDialog(
-            title = "Important Message",
-            div(
-              "Countdown completed! You clicked the button",
-              ClickCounter$NumberClicks, 
-              "times!"
+          mainPanel(
+            align = "center",
+            width = 12,
+            setBackgroundColor(
+              color = GEN_PALETTE(),
+              gradient = "radial",
+              direction = "bottom"
             )
-          ))
-          if (ClickCounter$NumberClicks <= 5000) {
+          ) # mainPanel
+        }) # renderUI
+
+        if (rvs$timer < 1) {
+          rvs$active <- FALSE
+          showModal(
+            modalDialog(
+              title = "Important Message",
+              div(
+                "Countdown completed! You clicked the button",
+                rvs$n_clicks,
+                "times!"
+              )
+            ) # modalDialog
+          ) # showModal
+          if (rvs$n_clicks <= 5000) {
             play(BORAT_SOUND)
           }
-        }
-      }
-    })
-  })
-
-  # observers for actionbuttons
-  observeEvent(input$Timer, {
-    play(FINAL_COUNTDOWN_SOUND)
-    active(TRUE)
-    timer(5)
-    output$DisplayingClicks <- renderText("")
+        } # if (rvs$timer < 1)
+      } # if (rvs$active)
+    }) # isolate
   })
 
   output$currentTime <- renderText({
-    invalidateLater(1000, session)
-    if (as.numeric(seconds_to_period(timer())) >= 5) {
+    if (as.numeric(seconds_to_period(rvs$timer) >= 5)) {
       "It's the final countdown!"
     } else {
       paste(
         "Hurry! You've only got",
-        as.numeric(seconds_to_period(timer())),
+        as.numeric(seconds_to_period(rvs$timer)),
         "seconds left!"
       )
     }
-  })
-}
+  }) # renderText
+} # server
