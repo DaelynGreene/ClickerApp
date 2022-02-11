@@ -80,10 +80,10 @@ ui <-
 server <- function(input, output, session) {
   timer <- reactiveVal(6)
   active <- reactiveVal(FALSE)
-
   
   
-
+  
+  
   ClickCounter <- reactiveValues(NumberClicks = 0)
   observeEvent(input$Timer, {
     ClickCounter$NumberClicks <- 0
@@ -98,7 +98,7 @@ server <- function(input, output, session) {
   
   
   observeEvent(input$DisplayClicks,{output$DisplayingClicks<-renderText({ClickCounter$NumberClicks})})
-
+  
   
   
   observe({
@@ -130,26 +130,27 @@ server <- function(input, output, session) {
               paste(ClickCounter$NumberClicks), "times!"
             )
           ))
+          if(ClickCounter$NumberClicks<=5000){play(load.wave("Borat.wav"))}
         }
       }
     })
   })
-
+  
   
   
   # observers for actionbuttons
-
   
-
+  
+  
   observeEvent(input$Timer, {
-    play(load.wave("FCW.wav"))
+    #play(load.wave("FCW.wav"))
     active(TRUE)
     timer(5)
     output$DisplayingClicks<-renderText("")
   })
-
-
-
+  
+  
+  
   output$currentTime <- renderText({
     invalidateLater(1000, session)
     if (as.numeric(seconds_to_period(timer())) >= 5) {
