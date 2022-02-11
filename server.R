@@ -2,8 +2,6 @@ library(shiny)
 library(lubridate)
 library(audio)
 
-
-
 server <- function(input, output, session) {
   timer <- reactiveVal(6)
   active <- reactiveVal(FALSE)
