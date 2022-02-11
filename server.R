@@ -47,11 +47,12 @@ server <- function(input, output, session) {
             title = "Important Message",
             div(
               "Countdown completed! You clicked the button",
-              paste(ClickCounter$NumberClicks), "times!"
+              ClickCounter$NumberClicks, 
+              "times!"
             )
           ))
           if (ClickCounter$NumberClicks <= 5000) {
-            play(load.wave("Borat.wav"))
+            play(BORAT_SOUND)
           }
         }
       }
@@ -60,7 +61,7 @@ server <- function(input, output, session) {
 
   # observers for actionbuttons
   observeEvent(input$Timer, {
-    # play(load.wave("FCW.wav"))
+    play(FINAL_COUNTDOWN_SOUND)
     active(TRUE)
     timer(5)
     output$DisplayingClicks <- renderText("")
@@ -69,7 +70,7 @@ server <- function(input, output, session) {
   output$currentTime <- renderText({
     invalidateLater(1000, session)
     if (as.numeric(seconds_to_period(timer())) >= 5) {
-      paste("It's the final countdown!")
+      "It's the final countdown!"
     } else {
       paste(
         "Hurry! You've only got",
