@@ -4,23 +4,18 @@ library(readr)
 library(stringr)
 
 WHY DOES BEEP NOT ACCEPT HTTPS BUT GSHEET2TBL DOES???????
-  gsheet::gsheet2tbl uses readr::read_csv, which uses gsheet::construct_download_url which uses stringr::str_extract
+  gsheet::gsheet2tbl uses readr::read_csv which uses gsheet::construct_download_url which uses stringr::str_extract
+  beep uses stringr::str_detect and stringr::download.file
 
 
 
   
-beep
+beep(URL OF THING TO PLAY <--- this thing equals sound)
 
   sound_path <- NULL
   if (is.na(sounds[sound]) || length(sounds[sound]) != 1) {
     if (is.character(sound)) {
       sound <- str_trim(sound)
-      if (file.exists(sound)) {
-        sound_path <- sound
-      }
-      else if (str_detect(sound, "^https://")) {
-        warning("Can't currently use https urls, only http.")
-      }
       else if (str_detect(sound, "^http://")) {
         temp_file <- tempfile(pattern = "")
         if (download.file(sound, destfile = temp_file, 
