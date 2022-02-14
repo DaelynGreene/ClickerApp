@@ -1,25 +1,23 @@
 library(lubridate)
 library(shiny)
 library(shinyWidgets)
-library(tuneR)
+library(audio)
 palette1 <- rainbow(50)
-
+OrangeAndWhite <- rep(c("#ff8200", "#ffffff"), 10)
+InitialBackground <- setBackgroundColor(color = OrangeAndWhite, gradient = "radial", direction = "top")
 
 ui <-
   fluidPage(
+    
     mainPanel(
       align = "center",
       width = 12,
-      setBackgroundColor(
-        color = c("#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200", "#ffffff", "#ff8200"),
-        gradient = "radial",
-        direction = "top"
-      )
+      InitialBackground
     ),
     
     
     
-    titlePanel(title = h3("How many clicks in 5 seconds!!!", align = "center"),windowTitle = "Clicker Challenge"),
+    titlePanel(title = h3("How many clicks in 5 seconds!!!", align = "center"), windowTitle = "Clicker Challenge"),
     
     
     
@@ -33,10 +31,16 @@ ui <-
         inputId = "Timer",
         label = "Start Timer"
       ),
+      
+      
+      
       actionButton(
         inputId = "Clicks",
         label = "Click Me"
       ),
+      
+      
+      
       actionButton(
         inputId = "DisplayClicks",
         label = "How Many Times Did I Click?"
@@ -51,6 +55,9 @@ ui <-
     
     
     h3(textOutput("currentTime"), align = "center"),
+    
+    
+    
     mainPanel(width = 12, align = "center", a(
       href = "https://haslam.utk.edu/experts/brian-stevens",
       "Learn more about the creator", align = "center"
@@ -66,14 +73,13 @@ ui <-
     
     
     
-    h3(textOutput("DisplayingClicks"),align="center")
-    
+    h3(textOutput("DisplayingClicks"), align = "center")
   )
 
 
 
-#####################################################################################################################################################################################
-#####################################################################################################################################################################################
+##############################################################################################################################
+##############################################################################################################################
 
 
 
@@ -81,46 +87,39 @@ server <- function(input, output, session) {
   timer <- reactiveVal(6)
   active <- reactiveVal(FALSE)
 
-  
-  
+
+
 
   ClickCounter <- reactiveValues(NumberClicks = 0)
-  observeEvent(input$Timer, {
-    ClickCounter$NumberClicks <- 0
-  })
   
-  
-  
+
+
   observeEvent(input$Clicks, {
     ClickCounter$NumberClicks <- ClickCounter$NumberClicks + 1
   })
-  
-  
-  
-  observeEvent(input$DisplayClicks,{output$DisplayingClicks<-renderText({ClickCounter$NumberClicks})})
 
-  
-  
+
+
+  observeEvent(input$DisplayClicks, {
+    output$DisplayingClicks <- renderText({
+      ClickCounter$NumberClicks
+    })
+  })
+
+
+
   observe({
     invalidateLater(1000, session)
     isolate({
       if (active()) {
         timer(timer() - 1)
-        output$Eggs <- renderUI({
-          isolate({
-            if (2 == 2) {
-              mainPanel(
-                align = "center",
-                width = 12,
-                setBackgroundColor(
-                  color = c(palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)], palette1[sample(1:50, 1)]),
-                  gradient = "radial",
-                  direction = "bottom"
-                )
-              )
-            }
-          })
-        })
+        # output$Eggs <- renderUI({
+        #   mainPanel(
+        #     align = "center",
+        #     width = 12,
+        #     setBackgroundColor(color=sample(rainbow(50),16), gradient="radial", direction="bottom")
+        #   )
+        # })
         if (timer() < 1) {
           active(FALSE)
           showModal(modalDialog(
@@ -130,23 +129,26 @@ server <- function(input, output, session) {
               paste(ClickCounter$NumberClicks), "times!"
             )
           ))
-          if(ClickCounter$NumberClicks<=5000){tag$audio(src="Borat.wav",type="audio/wav")}
+          # if (ClickCounter$NumberClicks <= 5000) {
+          #   play(load.wave("Borat.wav"))
+          # }
         }
       }
     })
   })
 
-  
-  
+
+
   # observers for actionbuttons
 
-  
+
 
   observeEvent(input$Timer, {
-    #play(load.wave("FCW.wav"))
+    ClickCounter$NumberClicks <- 0
+    play(load.wave("FCShorter.wav"))
     active(TRUE)
     timer(5)
-    output$DisplayingClicks<-renderText("")
+    output$DisplayingClicks <- renderText("")
   })
 
 
@@ -156,11 +158,19 @@ server <- function(input, output, session) {
     if (as.numeric(seconds_to_period(timer())) >= 5) {
       paste("It's the final countdown!")
     } else {
-      paste(
-        "Hurry! You've only got",
-        as.numeric(seconds_to_period(timer())),
-        "seconds left!"
-      )
+      if (timer() == 1) {
+        paste(
+          "Hurry! You've only got",
+          as.numeric(seconds_to_period(timer())),
+          "second left!"
+        )
+      } else {
+        paste(
+          "Hurry! You've only got",
+          as.numeric(seconds_to_period(timer())),
+          "seconds left!"
+        )
+      }
     }
   })
 }
