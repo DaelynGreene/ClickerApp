@@ -4,6 +4,7 @@ library(shinyWidgets)
 library(audio)
 palette1 <- rainbow(50)
 OrangeAndWhite <- rep(c("#ff8200", "#ffffff"), 10)
+OrangeAndWhite<-OrangeAndWhite[-20]
 InitialBackground <- setBackgroundColor(color = OrangeAndWhite, gradient = "radial", direction = "top")
 
 ui <-
@@ -113,13 +114,13 @@ server <- function(input, output, session) {
     isolate({
       if (active()) {
         timer(timer() - 1)
-        # output$Eggs <- renderUI({
-        #   mainPanel(
-        #     align = "center",
-        #     width = 12,
-        #     setBackgroundColor(color=sample(rainbow(50),16), gradient="radial", direction="bottom")
-        #   )
-        # })
+        output$Eggs <- renderUI({
+          mainPanel(
+            align = "center",
+            width = 12,
+            setBackgroundColor(color=sample(rainbow(50),16), gradient="radial", direction="bottom")
+          )
+        })
         if (timer() < 1) {
           active(FALSE)
           showModal(modalDialog(
@@ -129,9 +130,9 @@ server <- function(input, output, session) {
               paste(ClickCounter$NumberClicks), "times!"
             )
           ))
-          # if (ClickCounter$NumberClicks <= 5000) {
-          #   play(load.wave("Borat.wav"))
-          # }
+          if (ClickCounter$NumberClicks <= 5000) {
+            play(load.wave("Borat.wav"))
+          }
         }
       }
     })
